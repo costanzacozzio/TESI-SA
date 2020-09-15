@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>2 - Regressione Semplice</title>
+<title>Analisi e visualizzazione risultati cv n-grams</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13074,24 +13074,9 @@ div#notebook {
   <div tabindex="-1" id="notebook" class="border-box-sizing">
     <div class="container" id="notebook-container">
 
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3>Ricerca iperparametri tramite GridSearchCV</h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><p>Iniziamo con l'addestrare alcuni semplici modelli e ricercare la configurazione migliore di iperparametri. Successivamente confronteremo i risultati ottenuti con quelli risultanti da pipelines più complesse cercando di spiegare e motivare i possibili miglioramenti osservati.</p>
-
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[40]:</div>
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -13109,14 +13094,15 @@ div#notebook {
 <span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span><span class="p">,</span> <span class="n">GridSearchCV</span>
-<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span><span class="p">,</span> <span class="n">TfidfTransformer</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span><span class="p">,</span> <span class="n">TfidfTransformer</span><span class="p">,</span> <span class="n">TfidfVectorizer</span>
 
 <span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeRegressor</span>
 <span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">SGDRegressor</span><span class="p">,</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVR</span>
 
 <span class="kn">from</span> <span class="nn">scripts.clean_results</span> <span class="kn">import</span> <span class="n">clean_results_df</span><span class="p">,</span> <span class="n">dump_results</span>
 <span class="kn">from</span> <span class="nn">scripts.plotting_functions</span> <span class="kn">import</span> <span class="n">export_tree_graph</span><span class="p">,</span> <span class="n">render_tree_graph</span>
-<span class="kn">from</span> <span class="nn">scripts.plotting_functions</span> <span class="kn">import</span> <span class="n">plot_feature_importance</span><span class="p">,</span> <span class="n">plot_coefficients_significance</span>
+<span class="kn">from</span> <span class="nn">scripts.plotting_functions</span> <span class="kn">import</span> <span class="n">plot_feature_importance</span><span class="p">,</span> <span class="n">plot_coefficients_significance</span><span class="p">,</span><span class="n">plot_models_performance</span>
 
 <span class="kn">from</span> <span class="nn">scripts.analyzers</span> <span class="kn">import</span> <span class="n">simple_stemmer</span><span class="p">,</span> <span class="n">regexp_stemmer</span>
 
@@ -13149,7 +13135,7 @@ div#notebook {
 
     <div class="bk-root">
         <a href="https://bokeh.org" target="_blank" class="bk-logo bk-logo-small bk-logo-notebook"></a>
-        <span id="1003">Loading BokehJS ...</span>
+        <span id="1417">Loading BokehJS ...</span>
     </div>
 </div>
 
@@ -13163,10 +13149,10 @@ div#notebook {
 
 
 
-<div id="46d35c30-a0bb-4d57-b919-970ac378a45e"></div>
+<div id="7130de97-55f9-4bdb-b11a-cdd543e06482"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
+var element = $('#7130de97-55f9-4bdb-b11a-cdd543e06482');
 
 (function(root) {
   function now() {
@@ -13327,7 +13313,7 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
      "</div>"}};
 
   function display_loaded() {
-    var el = document.getElementById("1003");
+    var el = document.getElementById("1417");
     if (el != null) {
       el.textContent = "BokehJS is loading...";
     }
@@ -13447,7 +13433,7 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
       console.log("Bokeh: BokehJS failed to load within specified timeout.");
       root._bokeh_failed_load = true;
     } else if (force !== true) {
-      var cell = $(document.getElementById("1003")).parents('.cell').data().cell;
+      var cell = $(document.getElementById("1417")).parents('.cell').data().cell;
       cell.output_area.append_execute_result(NB_LOAD_WARNING)
     }
 
@@ -13475,13 +13461,13 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3>Lettura Dati</h3>
+<h3>Lettura dati di training &amp; testing</h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;../data/csv/train.csv&quot;</span><span class="p">)</span>
@@ -13498,7 +13484,7 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;../data/csv/train.csv&quot;</span><span class="p">)</span>
@@ -13513,16 +13499,9 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3>Separazione feature-labels</h3>
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">],</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;stars&#39;</span><span class="p">]</span>
@@ -13537,18 +13516,32 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3>Definizione della Pipeline</h3>
+<h3>Migliori parametri per modello SGD</h3>
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sgd_cv_results_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CV_RESULTS_FOLDER</span><span class="p">,</span> <span class="s2">&quot;ngrams_sgd_cv_results.csv&quot;</span><span class="p">)</span>
+<span class="n">sgd_cv_results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">sgd_cv_results_fp</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;rank_test_neg_root_mean_squared_error&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">simple_pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([</span>
-    <span class="p">(</span><span class="s1">&#39;cv&#39;</span><span class="p">,</span> <span class="n">CountVectorizer</span><span class="p">()),</span>
-    <span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;passthrough&#39;</span><span class="p">)</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sgd_pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([</span>
+    <span class="p">(</span><span class="s1">&#39;tfidf&#39;</span><span class="p">,</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">ngram_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">smooth_idf</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">SGDRegressor</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">,</span> <span class="n">penalty</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">))</span>
 <span class="p">])</span>
 </pre></div>
 
@@ -13557,34 +13550,46 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3>Griglia iperparametri</h3>
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">simple_param_grid</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span>
-        <span class="s1">&#39;model&#39;</span><span class="p">:[</span><span class="n">SGDRegressor</span><span class="p">()],</span>
-        <span class="s1">&#39;model__penalty&#39;</span><span class="p">:[</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span><span class="s1">&#39;l1&#39;</span><span class="p">],</span>
-        <span class="s1">&#39;model__alpha&#39;</span><span class="p">:[</span><span class="mf">0.00001</span><span class="p">,</span> <span class="mf">0.0001</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">],</span>
-        <span class="s1">&#39;model__learning_rate&#39;</span><span class="p">:[</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="s1">&#39;optimal&#39;</span><span class="p">],</span>
-        <span class="s1">&#39;model__max_iter&#39;</span><span class="p">:[</span><span class="mi">2500</span><span class="p">]</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-        <span class="s1">&#39;model&#39;</span><span class="p">:[</span><span class="n">LinearRegression</span><span class="p">()],</span>
-        <span class="s1">&#39;model__normalize&#39;</span><span class="p">:[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-        <span class="s1">&#39;model&#39;</span><span class="p">:[</span><span class="n">DecisionTreeRegressor</span><span class="p">()]</span>
-    <span class="p">}</span>
-<span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sgd_pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[7]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Pipeline(steps=[(&#39;tfidf&#39;, TfidfVectorizer(ngram_range=(1, 2))),
+                (&#39;model&#39;, SGDRegressor(alpha=1e-05))])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sgd_coefficients</span> <span class="o">=</span> <span class="n">sgd_pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">coef_</span>
 </pre></div>
 
     </div>
@@ -13592,25 +13597,124 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3>Training</h3>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">sgd_coefficients</span><span class="p">)</span>
+</pre></div>
+
+    </div>
 </div>
 </div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[9]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>1498685</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sgd_features_names</span> <span class="o">=</span> <span class="n">sgd_pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">vocabulary_</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">sgd_features_names</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[11]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>1498685</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sgd_coeff_names</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">sgd_features_names</span><span class="p">:</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">sgd_features_names</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="n">sgd_coeff_names</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">sgd_coefficients</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sgd_coefficients</span><span class="p">[</span><span class="n">index</span><span class="p">])))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sgd_coeff_names</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span> <span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">simple_gs</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span>
-    <span class="n">simple_pipeline</span><span class="p">,</span>
-    <span class="n">param_grid</span><span class="o">=</span><span class="n">simple_param_grid</span><span class="p">,</span>
-    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;neg_mean_absolute_error&#39;</span><span class="p">,</span> <span class="s1">&#39;neg_root_mean_squared_error&#39;</span><span class="p">],</span>
-    <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">refit</span><span class="o">=</span><span class="kc">False</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">35</span>
+<span class="n">sgd_importance_fig</span> <span class="o">=</span> <span class="n">plot_coefficients_significance</span><span class="p">(</span>
+    <span class="n">sgd_coeff_names</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;35 features più importanti per SGDRegressor&quot;</span>
 <span class="p">)</span>
 </pre></div>
 
@@ -13624,7 +13728,7 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 <div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">simple_gs</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="n">sgd_importance_fig</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13637,26 +13741,175 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[15]:</div>
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
 
 
 
 
-<div class="output_text output_subarea output_execute_result">
-<pre>GridSearchCV(cv=5,
-             estimator=Pipeline(steps=[(&#39;cv&#39;, CountVectorizer()),
-                                       (&#39;model&#39;, &#39;passthrough&#39;)]),
-             n_jobs=-1,
-             param_grid=[{&#39;model&#39;: [SGDRegressor()],
-                          &#39;model__alpha&#39;: [1e-05, 0.0001, 0.001],
-                          &#39;model__learning_rate&#39;: [&#39;constant&#39;, &#39;optimal&#39;],
-                          &#39;model__max_iter&#39;: [2500],
-                          &#39;model__penalty&#39;: [&#39;l2&#39;, &#39;l1&#39;]},
-                         {&#39;model&#39;: [LinearRegression()],
-                          &#39;model__normalize&#39;: [True, False]},
-                         {&#39;model&#39;: [DecisionTreeRegressor()]}],
-             refit=False,
-             scoring=[&#39;neg_mean_absolute_error&#39;, &#39;neg_root_mean_squared_error&#39;])</pre>
+
+
+  <div class="bk-root" id="2753b01b-e4cf-4892-90e2-45a4a430925a" data-root-id="1004"></div>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+<div id="17b5a343-c6f1-4ece-90b1-eaad4670b428"></div>
+<div class="output_subarea output_javascript ">
+<script type="text/javascript">
+var element = $('#17b5a343-c6f1-4ece-90b1-eaad4670b428');
+(function(root) {
+  function embed_document(root) {
+    
+  var docs_json = {"873da0cf-5bef-4309-9d66-c8725b123c97":{"roots":{"references":[{"attributes":{"below":[{"id":"1015"}],"center":[{"id":"1017"},{"id":"1021"},{"id":"1049"}],"left":[{"id":"1018"}],"plot_width":900,"renderers":[{"id":"1039"},{"id":"1054"}],"title":{"id":"1005"},"toolbar":{"id":"1029"},"x_range":{"id":"1007"},"x_scale":{"id":"1011"},"y_range":{"id":"1009"},"y_scale":{"id":"1013"}},"id":"1004","subtype":"Figure","type":"Plot"},{"attributes":{"fill_alpha":{"value":0.7},"fill_color":{"value":"#cc2c11"},"line_alpha":{"value":0.7},"line_color":{"value":"#cc2c11"},"top":{"field":"hs"},"width":{"value":0.2},"x":{"field":"xs"}},"id":"1037","type":"VBar"},{"attributes":{"data":{"hs":[5.649837821911234,3.3994060497719327,3.2943300288679027,3.067541361547521,3.0247048085894797,2.856868753049791,2.682720705521404,2.4852654716930043,2.3135712648374165,2.3018931210335483,2.2433231495808283,2.238756632060996,2.182833622030565],"xs":["not","worst","no","rude","told","horrible","said","terrible","money","the worst","bad","asked","never"]},"selected":{"id":"1065"},"selection_policy":{"id":"1064"}},"id":"1003","type":"ColumnDataSource"},{"attributes":{"factors":["great","not","amazing","and","best","love","delicious","awesome","excellent","worst","no","the best","rude","told","friendly","definitely","horrible","always","recommend","said","highly","good","terrible","money","with","the worst","thank","bad","asked","wonderful","perfect","thank you","fantastic","never","highly recommend"]},"id":"1007","type":"FactorRange"},{"attributes":{"axis_label":"Coefficiente","formatter":{"id":"1042"},"major_label_orientation":1,"ticker":{"id":"1016"}},"id":"1015","type":"CategoricalAxis"},{"attributes":{},"id":"1009","type":"DataRange1d"},{"attributes":{"data":{"hs":[6.96046549040583,5.176582602162471,4.624423505536655,4.4764186227998,4.180138609177772,3.834261962272414,3.468792997544686,3.4351393386912665,3.1222030640668965,2.9612753203797664,2.8806915720030717,2.805890521023148,2.713811782206616,2.6172291699142782,2.603380425619527,2.3045625294763945,2.289693782429686,2.227701131133005,2.225825462529832,2.2059311326557243,2.198826981369972,2.164313532999603],"xs":["great","amazing","and","best","love","delicious","awesome","excellent","the best","friendly","definitely","always","recommend","highly","good","with","thank","wonderful","perfect","thank you","fantastic","highly recommend"]},"selected":{"id":"1048"},"selection_policy":{"id":"1047"}},"id":"1002","type":"ColumnDataSource"},{"attributes":{"text":"35 features pi\u00f9 importanti per SGDRegressor"},"id":"1005","type":"Title"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#145b9c"},"line_alpha":{"value":0.1},"line_color":{"value":"#145b9c"},"top":{"field":"hs"},"width":{"value":0.2},"x":{"field":"xs"}},"id":"1053","type":"VBar"},{"attributes":{},"id":"1013","type":"LinearScale"},{"attributes":{"axis_label":"Valore Assoluto","formatter":{"id":"1044"},"ticker":{"id":"1019"}},"id":"1018","type":"LinearAxis"},{"attributes":{},"id":"1016","type":"CategoricalTicker"},{"attributes":{},"id":"1011","type":"CategoricalScale"},{"attributes":{"axis":{"id":"1018"},"dimension":1,"ticker":null},"id":"1021","type":"Grid"},{"attributes":{"axis":{"id":"1015"},"ticker":null},"id":"1017","type":"Grid"},{"attributes":{"fill_alpha":{"value":0.5},"fill_color":{"value":"#145b9c"},"line_alpha":{"value":0.5},"line_color":{"value":"#145b9c"},"top":{"field":"hs"},"width":{"value":0.2},"x":{"field":"xs"}},"id":"1052","type":"VBar"},{"attributes":{"overlay":{"id":"1028"}},"id":"1023","type":"BoxZoomTool"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#cc2c11"},"line_alpha":{"value":0.1},"line_color":{"value":"#cc2c11"},"top":{"field":"hs"},"width":{"value":0.2},"x":{"field":"xs"}},"id":"1038","type":"VBar"},{"attributes":{},"id":"1019","type":"BasicTicker"},{"attributes":{"callback":null,"tooltips":[["nome","@xs"],["valore","@hs"]]},"id":"1022","type":"HoverTool"},{"attributes":{},"id":"1027","type":"WheelZoomTool"},{"attributes":{},"id":"1024","type":"PanTool"},{"attributes":{"active_drag":"auto","active_inspect":"auto","active_multi":null,"active_scroll":"auto","active_tap":"auto","tools":[{"id":"1022"},{"id":"1023"},{"id":"1024"},{"id":"1025"},{"id":"1026"},{"id":"1027"}]},"id":"1029","type":"Toolbar"},{"attributes":{},"id":"1025","type":"SaveTool"},{"attributes":{},"id":"1026","type":"ResetTool"},{"attributes":{},"id":"1042","type":"CategoricalTickFormatter"},{"attributes":{},"id":"1065","type":"Selection"},{"attributes":{},"id":"1044","type":"BasicTickFormatter"},{"attributes":{},"id":"1048","type":"Selection"},{"attributes":{"source":{"id":"1002"}},"id":"1040","type":"CDSView"},{"attributes":{"items":[{"id":"1050"},{"id":"1066"}]},"id":"1049","type":"Legend"},{"attributes":{"label":{"value":"Positivi"},"renderers":[{"id":"1039"}]},"id":"1050","type":"LegendItem"},{"attributes":{},"id":"1047","type":"UnionRenderers"},{"attributes":{"data_source":{"id":"1003"},"glyph":{"id":"1052"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1053"},"selection_glyph":null,"view":{"id":"1055"}},"id":"1054","type":"GlyphRenderer"},{"attributes":{"label":{"value":"Negativi"},"renderers":[{"id":"1054"}]},"id":"1066","type":"LegendItem"},{"attributes":{"data_source":{"id":"1002"},"glyph":{"id":"1037"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1038"},"selection_glyph":null,"view":{"id":"1040"}},"id":"1039","type":"GlyphRenderer"},{"attributes":{"source":{"id":"1003"}},"id":"1055","type":"CDSView"},{"attributes":{},"id":"1064","type":"UnionRenderers"},{"attributes":{"bottom_units":"screen","fill_alpha":0.5,"fill_color":"lightgrey","left_units":"screen","level":"overlay","line_alpha":1.0,"line_color":"black","line_dash":[4,4],"line_width":2,"right_units":"screen","top_units":"screen"},"id":"1028","type":"BoxAnnotation"}],"root_ids":["1004"]},"title":"Bokeh Application","version":"2.1.1"}};
+  var render_items = [{"docid":"873da0cf-5bef-4309-9d66-c8725b123c97","root_ids":["1004"],"roots":{"1004":"2753b01b-e4cf-4892-90e2-45a4a430925a"}}];
+  root.Bokeh.embed.embed_items_notebook(docs_json, render_items);
+
+  }
+  if (root.Bokeh !== undefined) {
+    embed_document(root);
+  } else {
+    var attempts = 0;
+    var timer = setInterval(function(root) {
+      if (root.Bokeh !== undefined) {
+        clearInterval(timer);
+        embed_document(root);
+      } else {
+        attempts++;
+        if (attempts > 100) {
+          clearInterval(timer);
+          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+        }
+      }
+    }, 10, root)
+  }
+})(window);
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sgd_ngrams_coeff_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">sgd_coeff_names</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">sgd_ngrams_importance_fig</span> <span class="o">=</span> <span class="n">plot_coefficients_significance</span><span class="p">(</span>
+    <span class="n">sgd_ngrams_coeff_names</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;20 bi-grammi più importanti per SGDRegressor&quot;</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="n">sgd_ngrams_importance_fig</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+
+
+
+
+
+
+  <div class="bk-root" id="5ef1a862-5e65-401e-869c-1133c7560bf0" data-root-id="1149"></div>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+<div id="357cca8c-57b1-4fc1-8cb5-2cd1b1784980"></div>
+<div class="output_subarea output_javascript ">
+<script type="text/javascript">
+var element = $('#357cca8c-57b1-4fc1-8cb5-2cd1b1784980');
+(function(root) {
+  function embed_document(root) {
+    
+  var docs_json = {"fbbef89d-439d-47e8-914b-1d92e41f79ca":{"roots":{"references":[{"attributes":{"below":[{"id":"1160"}],"center":[{"id":"1162"},{"id":"1166"},{"id":"1194"}],"left":[{"id":"1163"}],"plot_width":900,"renderers":[{"id":"1184"},{"id":"1199"}],"title":{"id":"1150"},"toolbar":{"id":"1174"},"x_range":{"id":"1152"},"x_scale":{"id":"1156"},"y_range":{"id":"1154"},"y_scale":{"id":"1158"}},"id":"1149","subtype":"Figure","type":"Plot"},{"attributes":{},"id":"1172","type":"WheelZoomTool"},{"attributes":{"axis":{"id":"1163"},"dimension":1,"ticker":null},"id":"1166","type":"Grid"},{"attributes":{"fill_alpha":{"value":0.7},"fill_color":{"value":"#cc2c11"},"line_alpha":{"value":0.7},"line_color":{"value":"#cc2c11"},"top":{"field":"hs"},"width":{"value":0.2},"x":{"field":"xs"}},"id":"1182","type":"VBar"},{"attributes":{"axis_label":"Valore Assoluto","formatter":{"id":"1189"},"ticker":{"id":"1164"}},"id":"1163","type":"LinearAxis"},{"attributes":{"bottom_units":"screen","fill_alpha":0.5,"fill_color":"lightgrey","left_units":"screen","level":"overlay","line_alpha":1.0,"line_color":"black","line_dash":[4,4],"line_width":2,"right_units":"screen","top_units":"screen"},"id":"1173","type":"BoxAnnotation"},{"attributes":{},"id":"1164","type":"BasicTicker"},{"attributes":{"axis":{"id":"1160"},"ticker":null},"id":"1162","type":"Grid"},{"attributes":{"text":"20 bi-grammi pi\u00f9 importanti per SGDRegressor"},"id":"1150","type":"Title"},{"attributes":{},"id":"1169","type":"PanTool"},{"attributes":{"items":[{"id":"1195"},{"id":"1211"}]},"id":"1194","type":"Legend"},{"attributes":{"data":{"hs":[2.3018931210335483,1.6884586085222788,1.5596906219952815,1.4686650982998448,1.3677029102178557,1.2864650294601958,1.2190972417291028,1.210607400951235,1.1673481880255658],"xs":["the worst","do not","will never","had to","to be","was not","at all","will not","rude and"]},"selected":{"id":"1210"},"selection_policy":{"id":"1209"}},"id":"1148","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"value":0.5},"fill_color":{"value":"#145b9c"},"line_alpha":{"value":0.5},"line_color":{"value":"#145b9c"},"top":{"field":"hs"},"width":{"value":0.2},"x":{"field":"xs"}},"id":"1197","type":"VBar"},{"attributes":{},"id":"1171","type":"ResetTool"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#cc2c11"},"line_alpha":{"value":0.1},"line_color":{"value":"#cc2c11"},"top":{"field":"hs"},"width":{"value":0.2},"x":{"field":"xs"}},"id":"1183","type":"VBar"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#145b9c"},"line_alpha":{"value":0.1},"line_color":{"value":"#145b9c"},"top":{"field":"hs"},"width":{"value":0.2},"x":{"field":"xs"}},"id":"1198","type":"VBar"},{"attributes":{"source":{"id":"1148"}},"id":"1200","type":"CDSView"},{"attributes":{},"id":"1154","type":"DataRange1d"},{"attributes":{},"id":"1161","type":"CategoricalTicker"},{"attributes":{"label":{"value":"Negativi"},"renderers":[{"id":"1199"}]},"id":"1211","type":"LegendItem"},{"attributes":{},"id":"1170","type":"SaveTool"},{"attributes":{"factors":["the best","the worst","thank you","highly recommend","do not","will never","had to","to be","will definitely","love this","was not","was amazing","my favorite","will be","at all","will not","so good","rude and","was great","be back"]},"id":"1152","type":"FactorRange"},{"attributes":{},"id":"1158","type":"LinearScale"},{"attributes":{"data_source":{"id":"1148"},"glyph":{"id":"1197"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1198"},"selection_glyph":null,"view":{"id":"1200"}},"id":"1199","type":"GlyphRenderer"},{"attributes":{},"id":"1187","type":"CategoricalTickFormatter"},{"attributes":{"source":{"id":"1147"}},"id":"1185","type":"CDSView"},{"attributes":{"active_drag":"auto","active_inspect":"auto","active_multi":null,"active_scroll":"auto","active_tap":"auto","tools":[{"id":"1167"},{"id":"1168"},{"id":"1169"},{"id":"1170"},{"id":"1171"},{"id":"1172"}]},"id":"1174","type":"Toolbar"},{"attributes":{},"id":"1189","type":"BasicTickFormatter"},{"attributes":{},"id":"1156","type":"CategoricalScale"},{"attributes":{},"id":"1209","type":"UnionRenderers"},{"attributes":{},"id":"1210","type":"Selection"},{"attributes":{"label":{"value":"Positivi"},"renderers":[{"id":"1184"}]},"id":"1195","type":"LegendItem"},{"attributes":{"callback":null,"tooltips":[["nome","@xs"],["valore","@hs"]]},"id":"1167","type":"HoverTool"},{"attributes":{},"id":"1193","type":"Selection"},{"attributes":{"axis_label":"Coefficiente","formatter":{"id":"1187"},"major_label_orientation":1,"ticker":{"id":"1161"}},"id":"1160","type":"CategoricalAxis"},{"attributes":{"overlay":{"id":"1173"}},"id":"1168","type":"BoxZoomTool"},{"attributes":{"data_source":{"id":"1147"},"glyph":{"id":"1182"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1183"},"selection_glyph":null,"view":{"id":"1185"}},"id":"1184","type":"GlyphRenderer"},{"attributes":{"data":{"hs":[3.1222030640668965,2.2059311326557243,2.164313532999603,1.3676303443329623,1.361346552352032,1.2776889447445388,1.2775687256442967,1.2376794525813501,1.1898212002256554,1.1380410196891193,1.1312855511764879],"xs":["the best","thank you","highly recommend","will definitely","love this","was amazing","my favorite","will be","so good","was great","be back"]},"selected":{"id":"1193"},"selection_policy":{"id":"1192"}},"id":"1147","type":"ColumnDataSource"},{"attributes":{},"id":"1192","type":"UnionRenderers"}],"root_ids":["1149"]},"title":"Bokeh Application","version":"2.1.1"}};
+  var render_items = [{"docid":"fbbef89d-439d-47e8-914b-1d92e41f79ca","root_ids":["1149"],"roots":{"1149":"5ef1a862-5e65-401e-869c-1133c7560bf0"}}];
+  root.Bokeh.embed.embed_items_notebook(docs_json, render_items);
+
+  }
+  if (root.Bokeh !== undefined) {
+    embed_document(root);
+  } else {
+    var attempts = 0;
+    var timer = setInterval(function(root) {
+      if (root.Bokeh !== undefined) {
+        clearInterval(timer);
+        embed_document(root);
+      } else {
+        attempts++;
+        if (attempts > 100) {
+          clearInterval(timer);
+          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+        }
+      }
+    }, 10, root)
+  }
+})(window);
+</script>
 </div>
 
 </div>
@@ -13668,21 +13921,186 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3>Dump risultati GridSearchCV</h3>
+<h3>Migliori parametri per modello DTR</h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[40]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">results_df</span> <span class="o">=</span> <span class="n">clean_results_df</span><span class="p">(</span>
-    <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">simple_gs</span><span class="o">.</span><span class="n">cv_results_</span><span class="p">),</span>
-    <span class="n">to_remove</span><span class="o">=</span><span class="p">{},</span>
-    <span class="n">to_format</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mean_test_neg_mean_absolute_error&#39;</span><span class="p">,</span> <span class="s1">&#39;mean_test_neg_root_mean_squared_error&#39;</span><span class="p">],</span>
-    <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;.8f&quot;</span><span class="p">,</span>
-    <span class="n">new_index_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;rank_test_neg_root_mean_squared_error&#39;</span><span class="p">,</span> <span class="s1">&#39;rank_test_neg_mean_absolute_error&#39;</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dtr_cv_results_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CV_RESULTS_FOLDER</span><span class="p">,</span> <span class="s2">&quot;ngrams_dtr_cv_results.csv&quot;</span><span class="p">)</span>
+<span class="n">dtr_cv_results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dtr_cv_results_fp</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;rank_test_neg_root_mean_squared_error&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dtr_pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([</span>
+    <span class="p">(</span><span class="s1">&#39;tfidf&#39;</span><span class="p">,</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">ngram_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">smooth_idf</span><span class="o">=</span><span class="kc">False</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">DecisionTreeRegressor</span><span class="p">(</span>
+        <span class="n">max_depth</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span>
+        <span class="n">max_features</span><span class="o">=</span><span class="mi">7000</span><span class="p">,</span>
+        <span class="n">min_samples_leaf</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+        <span class="n">min_samples_split</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">splitter</span><span class="o">=</span><span class="s1">&#39;random&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dtr_pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[21]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Pipeline(steps=[(&#39;tfidf&#39;,
+                 TfidfVectorizer(ngram_range=(1, 2), smooth_idf=False)),
+                (&#39;model&#39;,
+                 DecisionTreeRegressor(max_depth=70, max_features=7000,
+                                       min_samples_leaf=400,
+                                       min_samples_split=1000,
+                                       splitter=&#39;random&#39;))])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dtr_features_names</span> <span class="o">=</span> <span class="p">(</span><span class="n">dtr_pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">vocabulary_</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">dtr_features_names</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[23]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>1498685</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dtr_features_importance</span> <span class="o">=</span> <span class="n">dtr_pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">feature_importances_</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">dtr_features_importance</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[25]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>1498685</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">export_tree_graph</span><span class="p">(</span>
+    <span class="n">decision_tree</span> <span class="o">=</span> <span class="n">dtr_pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+    <span class="n">vocabulary</span> <span class="o">=</span> <span class="n">dtr_features_names</span><span class="p">,</span>
+    <span class="n">out_file</span> <span class="o">=</span> <span class="s2">&quot;ngrams_tree.dot&quot;</span>
 <span class="p">)</span>
 </pre></div>
 
@@ -13693,17 +14111,851 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[42]:</div>
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">results_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CV_RESULTS_FOLDER</span><span class="p">,</span> <span class="s2">&quot;simple_gs_results.csv&quot;</span><span class="p">)</span>
-<span class="n">dump_results</span><span class="p">(</span><span class="n">results_df</span><span class="p">,</span> <span class="n">results_fp</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">render_tree_graph</span><span class="p">(</span><span class="s2">&quot;ngrams_tree.dot&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="./imgs/ngrams_tree.png" style="width=800;height=600"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dtr_importance_names</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">dtr_features_names</span><span class="p">:</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">dtr_features_names</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">dtr_features_importance</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">dtr_importance_names</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">dtr_features_importance</span><span class="p">[</span><span class="n">index</span><span class="p">]))</span>
+        
+<span class="n">dtr_importance_names</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span> <span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="n">dtr_importance_fig</span> <span class="o">=</span> <span class="n">plot_feature_importance</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">dtr_importance_names</span><span class="p">[:</span><span class="n">n</span><span class="p">]],</span>
+    <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">dtr_importance_names</span><span class="p">[:</span><span class="n">n</span><span class="p">]],</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Importanza migliori </span><span class="si">{}</span><span class="s2"> features Decision Tree Regressor&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">show</span><span class="p">(</span><span class="n">dtr_importance_fig</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+
+
+
+
+
+
+  <div class="bk-root" id="c956f1be-eb87-4785-932a-4ad88d9e109e" data-root-id="1302"></div>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+<div id="33b7f2bd-b896-4043-ac44-59de398a945e"></div>
+<div class="output_subarea output_javascript ">
+<script type="text/javascript">
+var element = $('#33b7f2bd-b896-4043-ac44-59de398a945e');
+(function(root) {
+  function embed_document(root) {
+    
+  var docs_json = {"c50eacce-64f4-4f0a-bb76-f7fbb3b1e68d":{"roots":{"references":[{"attributes":{"below":[{"id":"1313"}],"center":[{"id":"1315"},{"id":"1319"}],"left":[{"id":"1316"}],"plot_width":950,"renderers":[{"id":"1338"}],"title":{"id":"1303"},"toolbar":{"id":"1327"},"x_range":{"id":"1305"},"x_scale":{"id":"1309"},"y_range":{"id":"1307"},"y_scale":{"id":"1311"}},"id":"1302","subtype":"Figure","type":"Plot"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#12ab39"},"line_alpha":{"value":0.1},"line_color":{"value":"#1f77b4"},"top":{"field":"hs"},"width":{"value":0.25},"x":{"field":"xs"}},"id":"1337","type":"VBar"},{"attributes":{"fill_color":{"value":"#12ab39"},"line_color":{"value":"#1f77b4"},"top":{"field":"hs"},"width":{"value":0.25},"x":{"field":"xs"}},"id":"1336","type":"VBar"},{"attributes":{"source":{"id":"1334"}},"id":"1339","type":"CDSView"},{"attributes":{"text":"Importanza migliori 25 features Decision Tree Regressor"},"id":"1303","type":"Title"},{"attributes":{"bottom_units":"screen","fill_alpha":0.5,"fill_color":"lightgrey","left_units":"screen","level":"overlay","line_alpha":1.0,"line_color":"black","line_dash":[4,4],"line_width":2,"right_units":"screen","top_units":"screen"},"id":"1326","type":"BoxAnnotation"},{"attributes":{},"id":"1367","type":"Selection"},{"attributes":{},"id":"1311","type":"LinearScale"},{"attributes":{},"id":"1307","type":"DataRange1d"},{"attributes":{"axis_label":"Feature","formatter":{"id":"1361"},"major_label_orientation":1,"ticker":{"id":"1314"}},"id":"1313","type":"CategoricalAxis"},{"attributes":{},"id":"1314","type":"CategoricalTicker"},{"attributes":{},"id":"1309","type":"CategoricalScale"},{"attributes":{},"id":"1323","type":"SaveTool"},{"attributes":{"active_drag":"auto","active_inspect":"auto","active_multi":null,"active_scroll":"auto","active_tap":"auto","tools":[{"id":"1320"},{"id":"1321"},{"id":"1322"},{"id":"1323"},{"id":"1324"},{"id":"1325"}]},"id":"1327","type":"Toolbar"},{"attributes":{},"id":"1366","type":"UnionRenderers"},{"attributes":{"axis_label":"Importanza","formatter":{"id":"1363"},"ticker":{"id":"1317"}},"id":"1316","type":"LinearAxis"},{"attributes":{"axis":{"id":"1316"},"dimension":1,"ticker":null},"id":"1319","type":"Grid"},{"attributes":{},"id":"1361","type":"CategoricalTickFormatter"},{"attributes":{},"id":"1317","type":"BasicTicker"},{"attributes":{},"id":"1321","type":"WheelZoomTool"},{"attributes":{},"id":"1363","type":"BasicTickFormatter"},{"attributes":{"factors":["was told","and said","to pay","is great","was going","buy","sign","the waitress","location","old","the perfect","girl","gave","ve","out and","the food","all","an"]},"id":"1305","type":"FactorRange"},{"attributes":{},"id":"1324","type":"ResetTool"},{"attributes":{"data_source":{"id":"1334"},"glyph":{"id":"1336"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1337"},"selection_glyph":null,"view":{"id":"1339"}},"id":"1338","type":"GlyphRenderer"},{"attributes":{"overlay":{"id":"1326"}},"id":"1322","type":"BoxZoomTool"},{"attributes":{"axis":{"id":"1313"},"ticker":null},"id":"1315","type":"Grid"},{"attributes":{},"id":"1320","type":"PanTool"},{"attributes":{"data":{"hs":[0.1849605745930342,0.17241123744957254,0.172359417412777,0.1159142857372393,0.06235610975582715,0.04613998729012599,0.04306210344394709,0.03811033766160709,0.03593117262372917,0.027368022111260378,0.026372657886054827,0.015951789647667643,0.013967831267283405,0.013814306738169762,0.00985936374748306,0.009768186204054282,0.008844129947383069,0.0028084864827841328],"xs":["was told","and said","to pay","is great","was going","buy","sign","the waitress","location","old","the perfect","girl","gave","ve","out and","the food","all","an"]},"selected":{"id":"1367"},"selection_policy":{"id":"1366"}},"id":"1334","type":"ColumnDataSource"},{"attributes":{},"id":"1325","type":"HelpTool"}],"root_ids":["1302"]},"title":"Bokeh Application","version":"2.1.1"}};
+  var render_items = [{"docid":"c50eacce-64f4-4f0a-bb76-f7fbb3b1e68d","root_ids":["1302"],"roots":{"1302":"c956f1be-eb87-4785-932a-4ad88d9e109e"}}];
+  root.Bokeh.embed.embed_items_notebook(docs_json, render_items);
+
+  }
+  if (root.Bokeh !== undefined) {
+    embed_document(root);
+  } else {
+    var attempts = 0;
+    var timer = setInterval(function(root) {
+      if (root.Bokeh !== undefined) {
+        clearInterval(timer);
+        embed_document(root);
+      } else {
+        attempts++;
+        if (attempts > 100) {
+          clearInterval(timer);
+          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+        }
+      }
+    }, 10, root)
+  }
+})(window);
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3>Migliori parametri per modello SVR</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">svr_cv_results_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CV_RESULTS_FOLDER</span><span class="p">,</span> <span class="s2">&quot;ngrams_svr_cv_results.csv&quot;</span><span class="p">)</span>
+<span class="n">svr_cv_results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">svr_cv_results_fp</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;rank_rmse&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">svr_pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([</span>
+    <span class="p">(</span><span class="s1">&#39;tfidf&#39;</span><span class="p">,</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">ngram_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">smooth_idf</span><span class="o">=</span><span class="kc">False</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">SVR</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="s1">&#39;scale&#39;</span><span class="p">))</span>
+<span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">svr_pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[30]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Pipeline(steps=[(&#39;tfidf&#39;,
+                 TfidfVectorizer(ngram_range=(1, 2), smooth_idf=False)),
+                (&#39;model&#39;, SVR(C=50, kernel=&#39;linear&#39;))])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">svr_features_names</span> <span class="o">=</span> <span class="n">svr_pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">vocabulary_</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[40]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">svr_features_names</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[40]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>1498685</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[44]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">svr_coeffs</span> <span class="o">=</span> <span class="n">svr_pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[62]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">svr_coeffs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[62]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>1498685</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[63]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">svr_coeff_names</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">svr_features_names</span><span class="p">:</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">svr_features_names</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="n">svr_coeff_names</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">svr_coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">index</span><span class="p">],</span> <span class="nb">abs</span><span class="p">(</span><span class="n">svr_coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">index</span><span class="p">])))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[66]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">svr_coeff_names</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span> <span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[69]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="n">svr_importance_fig</span> <span class="o">=</span> <span class="n">plot_coefficients_significance</span><span class="p">(</span>
+    <span class="n">svr_coeff_names</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Migliori Coefficienti modello SVR kernel lineare&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[70]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="n">svr_importance_fig</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+
+
+
+
+
+
+  <div class="bk-root" id="db75001a-da99-4a6d-932a-e8b27afd1920" data-root-id="1646"></div>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+<div id="f3f55892-b22e-451c-af73-2ad078a797ea"></div>
+<div class="output_subarea output_javascript ">
+<script type="text/javascript">
+var element = $('#f3f55892-b22e-451c-af73-2ad078a797ea');
+(function(root) {
+  function embed_document(root) {
+    
+  var docs_json = {"536c3c4d-b021-467f-a0f4-1f124f5b4b9c":{"roots":{"references":[{"attributes":{"below":[{"id":"1657"}],"center":[{"id":"1659"},{"id":"1663"},{"id":"1691"}],"left":[{"id":"1660"}],"plot_width":900,"renderers":[{"id":"1681"},{"id":"1696"}],"title":{"id":"1647"},"toolbar":{"id":"1671"},"x_range":{"id":"1649"},"x_scale":{"id":"1653"},"y_range":{"id":"1651"},"y_scale":{"id":"1655"}},"id":"1646","subtype":"Figure","type":"Plot"},{"attributes":{},"id":"1706","type":"UnionRenderers"},{"attributes":{"axis":{"id":"1660"},"dimension":1,"ticker":null},"id":"1663","type":"Grid"},{"attributes":{},"id":"1667","type":"SaveTool"},{"attributes":{"callback":null,"tooltips":[["nome","@xs"],["valore","@hs"]]},"id":"1664","type":"HoverTool"},{"attributes":{},"id":"1707","type":"Selection"},{"attributes":{},"id":"1669","type":"WheelZoomTool"},{"attributes":{"active_drag":"auto","active_inspect":"auto","active_multi":null,"active_scroll":"auto","active_tap":"auto","tools":[{"id":"1664"},{"id":"1665"},{"id":"1666"},{"id":"1667"},{"id":"1668"},{"id":"1669"}]},"id":"1671","type":"Toolbar"},{"attributes":{"label":{"value":"Positivi"},"renderers":[{"id":"1681"}]},"id":"1692","type":"LegendItem"},{"attributes":{},"id":"1668","type":"ResetTool"},{"attributes":{"label":{"value":"Negativi"},"renderers":[{"id":"1696"}]},"id":"1708","type":"LegendItem"},{"attributes":{"items":[{"id":"1692"},{"id":"1708"}]},"id":"1691","type":"Legend"},{"attributes":{"data":{"hs":[5.88526742284625,5.358603571559822,5.241523031369702,4.973308417233584,4.721697334063863,4.283314103217316,4.19886285515013,3.908590400303889],"xs":["be disappointed","best","great","not disappointed","amazing","excellent","awesome","delicious"]},"selected":{"id":"1690"},"selection_policy":{"id":"1689"}},"id":"1644","type":"ColumnDataSource"},{"attributes":{"bottom_units":"screen","fill_alpha":0.5,"fill_color":"lightgrey","left_units":"screen","level":"overlay","line_alpha":1.0,"line_color":"black","line_dash":[4,4],"line_width":2,"right_units":"screen","top_units":"screen"},"id":"1670","type":"BoxAnnotation"},{"attributes":{"source":{"id":"1645"}},"id":"1697","type":"CDSView"},{"attributes":{"data_source":{"id":"1645"},"glyph":{"id":"1694"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1695"},"selection_glyph":null,"view":{"id":"1697"}},"id":"1696","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"1644"},"glyph":{"id":"1679"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1680"},"selection_glyph":null,"view":{"id":"1682"}},"id":"1681","type":"GlyphRenderer"},{"attributes":{"axis_label":"Coefficiente","formatter":{"id":"1685"},"major_label_orientation":1,"ticker":{"id":"1658"}},"id":"1657","type":"CategoricalAxis"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#cc2c11"},"line_alpha":{"value":0.1},"line_color":{"value":"#cc2c11"},"top":{"field":"hs"},"width":{"value":0.2},"x":{"field":"xs"}},"id":"1680","type":"VBar"},{"attributes":{"data":{"hs":[8.084330469506154,5.890276154106235,5.379279973789616,4.9689325207736275,4.743686341367674,4.656287067954151,4.646452855845457,4.56113609611046,4.398441799236111,4.210323095687158,4.168860847835797,4.129347536020569,4.094667761854869,4.055737886905752,3.788969604564331,3.7878250203136505,3.7845273446077403],"xs":["worst","horrible","terrible","not","rude","unprofessional","awful","worse","poor","disgusting","ask fo","never again","disappointing","one star","scam","told","unacceptable"]},"selected":{"id":"1707"},"selection_policy":{"id":"1706"}},"id":"1645","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#145b9c"},"line_alpha":{"value":0.1},"line_color":{"value":"#145b9c"},"top":{"field":"hs"},"width":{"value":0.2},"x":{"field":"xs"}},"id":"1695","type":"VBar"},{"attributes":{"text":"Migliori Coefficienti modello SVR kernel lineare"},"id":"1647","type":"Title"},{"attributes":{},"id":"1658","type":"CategoricalTicker"},{"attributes":{},"id":"1666","type":"PanTool"},{"attributes":{},"id":"1687","type":"BasicTickFormatter"},{"attributes":{"fill_alpha":{"value":0.5},"fill_color":{"value":"#145b9c"},"line_alpha":{"value":0.5},"line_color":{"value":"#145b9c"},"top":{"field":"hs"},"width":{"value":0.2},"x":{"field":"xs"}},"id":"1694","type":"VBar"},{"attributes":{},"id":"1651","type":"DataRange1d"},{"attributes":{"factors":["worst","horrible","be disappointed","terrible","best","great","not disappointed","not","rude","amazing","unprofessional","awful","worse","poor","excellent","disgusting","awesome","ask fo","never again","disappointing","one star","delicious","scam","told","unacceptable"]},"id":"1649","type":"FactorRange"},{"attributes":{},"id":"1655","type":"LinearScale"},{"attributes":{},"id":"1690","type":"Selection"},{"attributes":{"axis_label":"Valore Assoluto","formatter":{"id":"1687"},"ticker":{"id":"1661"}},"id":"1660","type":"LinearAxis"},{"attributes":{"fill_alpha":{"value":0.7},"fill_color":{"value":"#cc2c11"},"line_alpha":{"value":0.7},"line_color":{"value":"#cc2c11"},"top":{"field":"hs"},"width":{"value":0.2},"x":{"field":"xs"}},"id":"1679","type":"VBar"},{"attributes":{},"id":"1653","type":"CategoricalScale"},{"attributes":{"axis":{"id":"1657"},"ticker":null},"id":"1659","type":"Grid"},{"attributes":{},"id":"1685","type":"CategoricalTickFormatter"},{"attributes":{"overlay":{"id":"1670"}},"id":"1665","type":"BoxZoomTool"},{"attributes":{"source":{"id":"1644"}},"id":"1682","type":"CDSView"},{"attributes":{},"id":"1689","type":"UnionRenderers"},{"attributes":{},"id":"1661","type":"BasicTicker"}],"root_ids":["1646"]},"title":"Bokeh Application","version":"2.1.1"}};
+  var render_items = [{"docid":"536c3c4d-b021-467f-a0f4-1f124f5b4b9c","root_ids":["1646"],"roots":{"1646":"db75001a-da99-4a6d-932a-e8b27afd1920"}}];
+  root.Bokeh.embed.embed_items_notebook(docs_json, render_items);
+
+  }
+  if (root.Bokeh !== undefined) {
+    embed_document(root);
+  } else {
+    var attempts = 0;
+    var timer = setInterval(function(root) {
+      if (root.Bokeh !== undefined) {
+        clearInterval(timer);
+        embed_document(root);
+      } else {
+        attempts++;
+        if (attempts > 100) {
+          clearInterval(timer);
+          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+        }
+      }
+    }, 10, root)
+  }
+})(window);
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><h3>Comparazione errori di training</h3></p>
+<p><p>Procediamo ora con il confrontare l'errore quadratico medio dei vari modelli al fine di selezionare il modello più performante. Successivamente testeremo la capacità del miglior modello di generalizzare. Per fare questo sfrutteremo l'<i>hold-out</i> set creato nel primo notebook.<br>
+Potremmo essere tentanti di testare tutti i modelli ottenuti sull'insieme precedentemente menzionato e selezionare il modello che mostra l'errore più piccolo su tale insieme. Questa procedura va però evitata in quanto si rischia di overfittare i modelli alle particolari caratteristiche dell'insieme di test.</p>
+<p><p>Visto che abbiamo precedentemente ottenuto, tramite validazione incrociata, le misure di errore per i vari modelli ed avendole memorizzate in dei files è ora sufficiente metterle a confronto. Una volta selezionato il miglior modello procederemo ad addestrarlo sull'intero insieme di training e testarlo sull'insieme di test.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">best_models_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">RESULTS_FOLDER</span><span class="p">,</span><span class="s1">&#39;best_models_ranking.csv&#39;</span><span class="p">),</span>
+    <span class="n">index_col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;rank_rmse&#39;</span><span class="p">,</span> <span class="s1">&#39;rank_mae&#39;</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">best_models_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="s1">&#39;ngram_range&#39;</span><span class="p">,</span><span class="s1">&#39;mean_rmse&#39;</span><span class="p">,</span><span class="s1">&#39;std_rmse&#39;</span><span class="p">,</span><span class="s1">&#39;mean_mae&#39;</span><span class="p">,</span><span class="s1">&#39;std_mae&#39;</span><span class="p">]]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[37]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>model</th>
+      <th>ngram_range</th>
+      <th>mean_rmse</th>
+      <th>std_rmse</th>
+      <th>mean_mae</th>
+      <th>std_mae</th>
+    </tr>
+    <tr>
+      <th>rank_rmse</th>
+      <th>rank_mae</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1.0</th>
+      <th>4.0</th>
+      <td>SVR()</td>
+      <td>(1, 2)</td>
+      <td>0.821007</td>
+      <td>0.005164</td>
+      <td>0.653451</td>
+      <td>0.005016</td>
+    </tr>
+    <tr>
+      <th>2.0</th>
+      <th>3.0</th>
+      <td>SGDRegressor()</td>
+      <td>(1,1)</td>
+      <td>0.829567</td>
+      <td>0.005108</td>
+      <td>0.652813</td>
+      <td>0.003873</td>
+    </tr>
+    <tr>
+      <th>3.0</th>
+      <th>5.0</th>
+      <td>SGDRegressor()</td>
+      <td>(1, 2)</td>
+      <td>0.945281</td>
+      <td>0.004997</td>
+      <td>0.767041</td>
+      <td>0.004767</td>
+    </tr>
+    <tr>
+      <th>4.0</th>
+      <th>1.0</th>
+      <td>DecisionTreeRegressor()</td>
+      <td>(1,1)</td>
+      <td>1.283854</td>
+      <td>0.028661</td>
+      <td>1.045344</td>
+      <td>0.031268</td>
+    </tr>
+    <tr>
+      <th>5.0</th>
+      <th>6.0</th>
+      <td>DecisionTreeRegressor()</td>
+      <td>(1, 2)</td>
+      <td>1.465017</td>
+      <td>0.020844</td>
+      <td>1.248204</td>
+      <td>0.026967</td>
+    </tr>
+    <tr>
+      <th>6.0</th>
+      <th>2.0</th>
+      <td>LinearRegression()</td>
+      <td>(1,1)</td>
+      <td>1.466439</td>
+      <td>0.026019</td>
+      <td>0.989667</td>
+      <td>0.009860</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">models_performance_fig</span> <span class="o">=</span> <span class="n">plot_models_performance</span><span class="p">(</span><span class="n">best_models_df</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="n">models_performance_fig</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+
+
+
+
+
+
+  <div class="bk-root" id="a70aa7b1-9af4-4ac0-ab71-f5562d103036" data-root-id="1418"></div>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+<div id="ffa8911b-b08c-460b-8eb6-53bb5275c0ef"></div>
+<div class="output_subarea output_javascript ">
+<script type="text/javascript">
+var element = $('#ffa8911b-b08c-460b-8eb6-53bb5275c0ef');
+(function(root) {
+  function embed_document(root) {
+    
+  var docs_json = {"ca966a8e-cb8c-479a-b558-6eaa393477a6":{"roots":{"references":[{"attributes":{"below":[{"id":"1429"}],"center":[{"id":"1432"},{"id":"1436"},{"id":"1470"},{"id":"1573"}],"left":[{"id":"1433"}],"plot_width":800,"renderers":[{"id":"1460"},{"id":"1475"},{"id":"1491"},{"id":"1509"},{"id":"1529"},{"id":"1551"}],"title":{"id":"1419"},"toolbar":{"id":"1444"},"x_range":{"id":"1421"},"x_scale":{"id":"1425"},"y_range":{"id":"1423"},"y_scale":{"id":"1427"}},"id":"1418","subtype":"Figure","type":"Plot"},{"attributes":{"items":[{"id":"1471"},{"id":"1487"},{"id":"1505"},{"id":"1525"},{"id":"1547"},{"id":"1571"}],"location":"top_left"},"id":"1470","type":"Legend"},{"attributes":{},"id":"1546","type":"Selection"},{"attributes":{"overlay":{"id":"1443"}},"id":"1438","type":"BoxZoomTool"},{"attributes":{},"id":"1486","type":"Selection"},{"attributes":{},"id":"1545","type":"UnionRenderers"},{"attributes":{},"id":"1427","type":"LinearScale"},{"attributes":{},"id":"1485","type":"UnionRenderers"},{"attributes":{"axis_label":"Performance","formatter":{"id":"1465"},"ticker":{"id":"1434"}},"id":"1433","type":"LinearAxis"},{"attributes":{"source":{"id":"1451"}},"id":"1461","type":"CDSView"},{"attributes":{"callback":null,"tooltips":[["modello","@modello"],["parametri","@params"]]},"id":"1437","type":"HoverTool"},{"attributes":{"fill_alpha":{"value":0.7},"fill_color":{"value":"#cc2c11"},"line_alpha":{"value":0.7},"line_color":{"value":"#cc2c11"},"top":{"field":"top"},"width":{"value":0.5},"x":{"field":"x"}},"id":"1473","type":"VBar"},{"attributes":{"source":{"id":"1456"}},"id":"1552","type":"CDSView"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#145b9c"},"line_alpha":{"value":0.1},"line_color":{"value":"#145b9c"},"top":{"field":"top"},"width":{"value":0.5},"x":{"field":"x"}},"id":"1550","type":"VBar"},{"attributes":{"source":{"id":"1453"}},"id":"1492","type":"CDSView"},{"attributes":{},"id":"1425","type":"LinearScale"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#a81c03"},"line_alpha":{"value":0.1},"line_color":{"value":"#a81c03"},"top":{"field":"top"},"width":{"value":0.5},"x":{"field":"x"}},"id":"1490","type":"VBar"},{"attributes":{"label":{"value":"LinearRegression"},"renderers":[{"id":"1551"}]},"id":"1571","type":"LegendItem"},{"attributes":{"data_source":{"id":"1456"},"glyph":{"id":"1549"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1550"},"selection_glyph":null,"view":{"id":"1552"}},"id":"1551","type":"GlyphRenderer"},{"attributes":{},"id":"1465","type":"BasicTickFormatter"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#12ab39"},"line_alpha":{"value":0.1},"line_color":{"value":"#12ab39"},"top":{"field":"top"},"width":{"value":0.5},"x":{"field":"x"}},"id":"1508","type":"VBar"},{"attributes":{"label":{"value":"SGDRegressor (1, 2)"},"renderers":[{"id":"1491"}]},"id":"1505","type":"LegendItem"},{"attributes":{},"id":"1421","type":"DataRange1d"},{"attributes":{"data_source":{"id":"1453"},"glyph":{"id":"1489"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1490"},"selection_glyph":null,"view":{"id":"1492"}},"id":"1491","type":"GlyphRenderer"},{"attributes":{},"id":"1434","type":"BasicTicker"},{"attributes":{},"id":"1430","type":"BasicTicker"},{"attributes":{},"id":"1570","type":"Selection"},{"attributes":{},"id":"1504","type":"Selection"},{"attributes":{"axis":{"id":"1433"},"dimension":1,"ticker":null},"id":"1436","type":"Grid"},{"attributes":{"text":"Performance modelli"},"id":"1419","type":"Title"},{"attributes":{},"id":"1569","type":"UnionRenderers"},{"attributes":{},"id":"1503","type":"UnionRenderers"},{"attributes":{"axis_label":"Modelli","formatter":{"id":"1463"},"major_label_orientation":0.5,"major_label_overrides":{"1":"SVR","2":"SGD Linear","3":"SGD Linear","4":"Decision Tree","5":"Decision Tree","6":"Linear"},"ticker":{"id":"1430"}},"id":"1429","type":"LinearAxis"},{"attributes":{},"id":"1441","type":"ResetTool"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#ab128f"},"line_alpha":{"value":0.1},"line_color":{"value":"#ab128f"},"top":{"field":"top"},"width":{"value":0.5},"x":{"field":"x"}},"id":"1459","type":"VBar"},{"attributes":{},"id":"1463","type":"BasicTickFormatter"},{"attributes":{"fill_alpha":{"value":0.7},"fill_color":{"value":"#12ab39"},"line_alpha":{"value":0.7},"line_color":{"value":"#12ab39"},"top":{"field":"top"},"width":{"value":0.5},"x":{"field":"x"}},"id":"1507","type":"VBar"},{"attributes":{},"id":"1469","type":"Selection"},{"attributes":{"axis":{"id":"1429"},"ticker":null},"id":"1432","type":"Grid"},{"attributes":{"source":{"id":"1454"}},"id":"1510","type":"CDSView"},{"attributes":{"base":{"field":"base","units":"data"},"lower":{"field":"lower","units":"data"},"lower_head":{"id":"1577"},"source":{"id":"1572"},"upper":{"field":"upper","units":"data"},"upper_head":{"id":"1576"}},"id":"1573","type":"Whisker"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#0d852c"},"line_alpha":{"value":0.1},"line_color":{"value":"#0d852c"},"top":{"field":"top"},"width":{"value":0.5},"x":{"field":"x"}},"id":"1528","type":"VBar"},{"attributes":{"data":{"base":[1,2,3,4,5,6],"lower":{"__ndarray__":"jxWpkGEb6j9YkjzX92HqPyG36EPPFu4/p7BSQUUV9D9QgIqvVBv3P7IRiNf1C/c/","dtype":"float64","order":"little","shape":[6]},"upper":{"__ndarray__":"e3bA0/1v6j/aPXlYqLXqP/ldFeqtaO4/qyaIug8A9T9cDB+5Fcb3PwR1yqMb4fc/","dtype":"float64","order":"little","shape":[6]}},"selected":{"id":"1596"},"selection_policy":{"id":"1595"}},"id":"1572","type":"ColumnDataSource"},{"attributes":{"label":{"value":"DecisionTreeRegressor"},"renderers":[{"id":"1509"}]},"id":"1525","type":"LegendItem"},{"attributes":{},"id":"1468","type":"UnionRenderers"},{"attributes":{"data_source":{"id":"1454"},"glyph":{"id":"1507"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1508"},"selection_glyph":null,"view":{"id":"1510"}},"id":"1509","type":"GlyphRenderer"},{"attributes":{},"id":"1442","type":"WheelZoomTool"},{"attributes":{"level":"underlay","size":10},"id":"1576","type":"TeeHead"},{"attributes":{},"id":"1524","type":"Selection"},{"attributes":{"level":"underlay","size":10},"id":"1577","type":"TeeHead"},{"attributes":{"data_source":{"id":"1451"},"glyph":{"id":"1458"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1459"},"selection_glyph":null,"view":{"id":"1461"}},"id":"1460","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"value":0.7},"fill_color":{"value":"#a81c03"},"line_alpha":{"value":0.7},"line_color":{"value":"#a81c03"},"top":{"field":"top"},"width":{"value":0.5},"x":{"field":"x"}},"id":"1489","type":"VBar"},{"attributes":{},"id":"1523","type":"UnionRenderers"},{"attributes":{"source":{"id":"1452"}},"id":"1476","type":"CDSView"},{"attributes":{"data":{"modello":["DecisionTreeRegressor()"],"params":["ngram_range : (1, 2), max_depth : 70, max_features : 7000, min_samples_leaf : 400, min_samples_split : 1000, splitter :'random'"],"top":[[1.46501656]],"x":[5]},"selected":{"id":"1546"},"selection_policy":{"id":"1545"}},"id":"1455","type":"ColumnDataSource"},{"attributes":{},"id":"1595","type":"UnionRenderers"},{"attributes":{},"id":"1596","type":"Selection"},{"attributes":{},"id":"1439","type":"PanTool"},{"attributes":{"fill_alpha":{"value":0.7},"fill_color":{"value":"#0d852c"},"line_alpha":{"value":0.7},"line_color":{"value":"#0d852c"},"top":{"field":"top"},"width":{"value":0.5},"x":{"field":"x"}},"id":"1527","type":"VBar"},{"attributes":{"fill_alpha":{"value":0.7},"fill_color":{"value":"#145b9c"},"line_alpha":{"value":0.7},"line_color":{"value":"#145b9c"},"top":{"field":"top"},"width":{"value":0.5},"x":{"field":"x"}},"id":"1549","type":"VBar"},{"attributes":{"label":{"value":"SVR (1, 2)"},"renderers":[{"id":"1460"}]},"id":"1471","type":"LegendItem"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#cc2c11"},"line_alpha":{"value":0.1},"line_color":{"value":"#cc2c11"},"top":{"field":"top"},"width":{"value":0.5},"x":{"field":"x"}},"id":"1474","type":"VBar"},{"attributes":{"source":{"id":"1455"}},"id":"1530","type":"CDSView"},{"attributes":{"end":1.966439,"start":-0.17899337000000004},"id":"1423","type":"Range1d"},{"attributes":{},"id":"1440","type":"SaveTool"},{"attributes":{"label":{"value":"DecisionTreeRegressor (1, 2)"},"renderers":[{"id":"1529"}]},"id":"1547","type":"LegendItem"},{"attributes":{"label":{"value":"SGDRegressor"},"renderers":[{"id":"1475"}]},"id":"1487","type":"LegendItem"},{"attributes":{"data":{"modello":["SVR()"],"params":["ngram_range : (1,2), C : 50, gamma : 'scale', kernel : 'linear'"],"top":[[0.82100663]],"x":[1]},"selected":{"id":"1469"},"selection_policy":{"id":"1468"}},"id":"1451","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"1455"},"glyph":{"id":"1527"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1528"},"selection_glyph":null,"view":{"id":"1530"}},"id":"1529","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"value":0.7},"fill_color":{"value":"#ab128f"},"line_alpha":{"value":0.7},"line_color":{"value":"#ab128f"},"top":{"field":"top"},"width":{"value":0.5},"x":{"field":"x"}},"id":"1458","type":"VBar"},{"attributes":{"data_source":{"id":"1452"},"glyph":{"id":"1473"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1474"},"selection_glyph":null,"view":{"id":"1476"}},"id":"1475","type":"GlyphRenderer"},{"attributes":{"data":{"modello":["SGDRegressor()"],"params":["ngram_range : (1, 2), alpha : 0.00001, penalty : l2"],"top":[[0.829567]],"x":[2]},"selected":{"id":"1486"},"selection_policy":{"id":"1485"}},"id":"1452","type":"ColumnDataSource"},{"attributes":{"data":{"modello":["LinearRegression()"],"params":["analyzer : 'stemming_re'"],"top":[[1.466439]],"x":[6]},"selected":{"id":"1570"},"selection_policy":{"id":"1569"}},"id":"1456","type":"ColumnDataSource"},{"attributes":{"bottom_units":"screen","fill_alpha":0.5,"fill_color":"lightgrey","left_units":"screen","level":"overlay","line_alpha":1.0,"line_color":"black","line_dash":[4,4],"line_width":2,"right_units":"screen","top_units":"screen"},"id":"1443","type":"BoxAnnotation"},{"attributes":{"data":{"modello":["DecisionTreeRegressor()"],"params":["analyzer : 'stemming_analyzer', max_depth : 100, max_features : 5000, min_samples_leaf : 500, min_samples_split : 1000, splitter :'random'"],"top":[[1.283854]],"x":[4]},"selected":{"id":"1524"},"selection_policy":{"id":"1523"}},"id":"1454","type":"ColumnDataSource"},{"attributes":{"active_drag":"auto","active_inspect":"auto","active_multi":null,"active_scroll":"auto","active_tap":"auto","tools":[{"id":"1437"},{"id":"1438"},{"id":"1439"},{"id":"1440"},{"id":"1441"},{"id":"1442"}]},"id":"1444","type":"Toolbar"},{"attributes":{"data":{"modello":["SGDRegressor()"],"params":["analyzer : 'default', alpha : 0.00001, penalty : l2"],"top":[[0.94528131]],"x":[3]},"selected":{"id":"1504"},"selection_policy":{"id":"1503"}},"id":"1453","type":"ColumnDataSource"}],"root_ids":["1418"]},"title":"Bokeh Application","version":"2.1.1"}};
+  var render_items = [{"docid":"ca966a8e-cb8c-479a-b558-6eaa393477a6","root_ids":["1418"],"roots":{"1418":"a70aa7b1-9af4-4ac0-ab71-f5562d103036"}}];
+  root.Bokeh.embed.embed_items_notebook(docs_json, render_items);
+
+  }
+  if (root.Bokeh !== undefined) {
+    embed_document(root);
+  } else {
+    var attempts = 0;
+    var timer = setInterval(function(root) {
+      if (root.Bokeh !== undefined) {
+        clearInterval(timer);
+        embed_document(root);
+      } else {
+        attempts++;
+        if (attempts > 100) {
+          clearInterval(timer);
+          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+        }
+      }
+    }, 10, root)
+  }
+})(window);
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><h3>Valutazione modello sull'insieme di test</h3></p>
+<p><p>Ora che abbiamo un'idea dell'errore commesso dai modelli sull'insieme di training e necessario valutarne la capacità di generalizzare a nuove istanze non incontrate durante la fase di addestramento.<br></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_test_transformed</span> <span class="o">=</span> <span class="n">svr_pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="n">validation_preds</span> <span class="o">=</span> <span class="n">svr_pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_transformed</span><span class="p">)</span>
+<span class="n">validation_mse</span> <span class="o">=</span> <span class="n">mean_squared_error</span><span class="p">(</span><span class="n">Y_test</span><span class="p">,</span> <span class="n">validation_preds</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">validation_rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">validation_mse</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">validation_rmse</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[33]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>0.09676326798812296</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><p>Sembrerebbe che le predizioni del modello sull'insieme di test siano particolarmente accurate. E' strano che l'errore di validazione sia così inferiore a quello di training, fenomeno che non mi sono ancora riuscita a spiegare.</p>
+<p><p>Nonostante sia generalmente accettato che l'insieme di test non vada utilizzato per validare più di un modello (in quanto si rischia di selezionare il modello che meglio si adatta alle particolari caratteristiche dell'insieme di test) lo utilizzeremo per validare anche uno dei modelli lineari per verificare se anche in quel caso l'errore di validazione sia di parecchio inferiore a quello di test.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[364]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sgd_pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([</span>
+    <span class="p">(</span><span class="s1">&#39;tfidf&#39;</span><span class="p">,</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">ngram_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">smooth_idf</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">SGDRegressor</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">,</span> <span class="n">penalty</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">))</span>
+<span class="p">])</span>
+<span class="n">sgd_pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[364]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Pipeline(steps=[(&#39;tfidf&#39;, TfidfVectorizer(ngram_range=(1, 2))),
+                (&#39;model&#39;, SGDRegressor(alpha=1e-05))])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[365]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_test_transformed_2</span> <span class="o">=</span> <span class="n">sgd_pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="n">validation_preds_2</span> <span class="o">=</span> <span class="n">sgd_pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_transformed_2</span><span class="p">)</span>
+<span class="n">validation_mse_2</span> <span class="o">=</span> <span class="n">mean_squared_error</span><span class="p">(</span><span class="n">Y_test</span><span class="p">,</span> <span class="n">validation_preds_2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[366]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">validation_rmse_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">validation_mse_2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[367]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">validation_rmse_2</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[367]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>0.9165432767470858</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><p>In questo caso l'errore di validazione del modello SGDRegressor è poco maggiore dell'errore di training. Questo è abbastanza comune ma non troppo preoccupante in quanto la discrepanza è abbastanza piccola.</p>
+
+</div>
+</div>
 </div>
     </div>
   </div>

@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>2 - Regressione Semplice</title>
+<title>Sentiment Polarity</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13077,58 +13077,40 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3>Ricerca iperparametri tramite GridSearchCV</h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><p>Iniziamo con l'addestrare alcuni semplici modelli e ricercare la configurazione migliore di iperparametri. Successivamente confronteremo i risultati ottenuti con quelli risultanti da pipelines più complesse cercando di spiegare e motivare i possibili miglioramenti osservati.</p>
+<p><h1>Sentiment Polarity</h1></p>
+<p><p>In questo notebook andremo ad utilizzare la libreria SentiWordNet per calcolare il sentiment contenuto in varie parole contenute nelle recensioni.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[40]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">import</span> <span class="nn">graphviz</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">textblob</span> <span class="k">as</span> <span class="nn">tb</span>
 
-<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
-<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span><span class="p">,</span> <span class="n">GridSearchCV</span>
+<span class="kn">from</span> <span class="nn">nltk</span> <span class="kn">import</span> <span class="n">pos_tag</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">sentiwordnet</span> <span class="k">as</span> <span class="n">swn</span>
+
 <span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span><span class="p">,</span> <span class="n">TfidfTransformer</span>
 
-<span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeRegressor</span>
-<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">SGDRegressor</span><span class="p">,</span> <span class="n">LinearRegression</span>
-
-<span class="kn">from</span> <span class="nn">scripts.clean_results</span> <span class="kn">import</span> <span class="n">clean_results_df</span><span class="p">,</span> <span class="n">dump_results</span>
-<span class="kn">from</span> <span class="nn">scripts.plotting_functions</span> <span class="kn">import</span> <span class="n">export_tree_graph</span><span class="p">,</span> <span class="n">render_tree_graph</span>
-<span class="kn">from</span> <span class="nn">scripts.plotting_functions</span> <span class="kn">import</span> <span class="n">plot_feature_importance</span><span class="p">,</span> <span class="n">plot_coefficients_significance</span>
-
-<span class="kn">from</span> <span class="nn">scripts.analyzers</span> <span class="kn">import</span> <span class="n">simple_stemmer</span><span class="p">,</span> <span class="n">regexp_stemmer</span>
+<span class="kn">from</span> <span class="nn">scripts.plotting_functions</span> <span class="kn">import</span> <span class="n">plot_words_polarity</span>
+<span class="kn">from</span> <span class="nn">scripts.utility</span> <span class="kn">import</span> <span class="n">convert_tags</span><span class="p">,</span> <span class="n">get_pos_score</span>
+<span class="kn">from</span> <span class="nn">scripts.analyzers</span> <span class="kn">import</span> <span class="n">remove_stopwords</span><span class="p">,</span> <span class="n">dummy_analyzer</span>
 
 <span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">output_notebook</span><span class="p">,</span> <span class="n">show</span>
+
 <span class="n">output_notebook</span><span class="p">()</span>
 
-<span class="n">SEED</span> <span class="o">=</span> <span class="mi">99</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
-
 <span class="n">DATA_FOLDER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;../data&quot;</span><span class="p">)</span>
-<span class="n">RESULTS_FOLDER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_FOLDER</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">)</span>
-<span class="n">CV_RESULTS_FOLDER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">RESULTS_FOLDER</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13149,7 +13131,7 @@ div#notebook {
 
     <div class="bk-root">
         <a href="https://bokeh.org" target="_blank" class="bk-logo bk-logo-small bk-logo-notebook"></a>
-        <span id="1003">Loading BokehJS ...</span>
+        <span id="1001">Loading BokehJS ...</span>
     </div>
 </div>
 
@@ -13163,10 +13145,10 @@ div#notebook {
 
 
 
-<div id="46d35c30-a0bb-4d57-b919-970ac378a45e"></div>
+<div id="0d59cd78-17be-4127-8fc0-1d4f2c5eb047"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
+var element = $('#0d59cd78-17be-4127-8fc0-1d4f2c5eb047');
 
 (function(root) {
   function now() {
@@ -13327,7 +13309,7 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
      "</div>"}};
 
   function display_loaded() {
-    var el = document.getElementById("1003");
+    var el = document.getElementById("1001");
     if (el != null) {
       el.textContent = "BokehJS is loading...";
     }
@@ -13393,7 +13375,7 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
       document.body.appendChild(element);
     }
 
-    const hashes = {"https://cdn.bokeh.org/bokeh/release/bokeh-2.1.1.min.js": "kLr4fYcqcSpbuI95brIH3vnnYCquzzSxHPU6XGQCIkQRGJwhg0StNbj1eegrHs12", "https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.1.1.min.js": "xIGPmVtaOm+z0BqfSOMn4lOR6ciex448GIKG4eE61LsAvmGj48XcMQZtKcE/UXZe", "https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.1.1.min.js": "Dc9u1wF/0zApGIWoBbH77iWEHtdmkuYWG839Uzmv8y8yBLXebjO9ZnERsde5Ln/P", "https://cdn.bokeh.org/bokeh/release/bokeh-gl-2.1.1.min.js": "cT9JaBz7GiRXdENrJLZNSC6eMNF3nh3fa5fTF51Svp+ukxPdwcU5kGXGPBgDCa2j"};
+    const hashes = {"https://cdn.bokeh.org/bokeh/release/bokeh-2.2.0.min.js": "jtq3UzIrk2TfDZfSNGEN0ICKrRWmtzZSQm6i1Xnd3hY3UfU9m98vuEL7JUv7Iway", "https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.2.0.min.js": "rRlSZb4FImflqQNhKcvkZq8b+FqcNFxP9CmCO8Vgo9uNXe6wk6yNMlKMrXn+TjeM", "https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.2.0.min.js": "MJyUmyL5f4wPlABPEp4CF5HzMeAPMvzucE8gEGNH15tAWgHFb2hsPNIEkva89XtP"};
 
     for (var i = 0; i < js_urls.length; i++) {
       var url = js_urls[i];
@@ -13418,7 +13400,7 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
   }
 
   
-  var js_urls = ["https://cdn.bokeh.org/bokeh/release/bokeh-2.1.1.min.js", "https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.1.1.min.js", "https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.1.1.min.js", "https://cdn.bokeh.org/bokeh/release/bokeh-gl-2.1.1.min.js"];
+  var js_urls = ["https://cdn.bokeh.org/bokeh/release/bokeh-2.2.0.min.js", "https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.2.0.min.js", "https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.2.0.min.js"];
   var css_urls = [];
   
 
@@ -13447,7 +13429,7 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
       console.log("Bokeh: BokehJS failed to load within specified timeout.");
       root._bokeh_failed_load = true;
     } else if (force !== true) {
-      var cell = $(document.getElementById("1003")).parents('.cell').data().cell;
+      var cell = $(document.getElementById("1001")).parents('.cell').data().cell;
       cell.output_area.append_execute_result(NB_LOAD_WARNING)
     }
 
@@ -13475,7 +13457,75 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3>Lettura Dati</h3>
+<p><h3>Caricamento Dati e Sampling</h3></p>
+<p><p>Cominciamo con il leggere il file di training contenente le recensioni e caricarlo in un <code>DataFrame</code> pandas. Successivamente si è rilevato necessario effettuare sampling per ridurre in numero di recensioni considerate; questo perchè la funzione <code>TextBlob()</code>, utilizzata per il <i>tagging</i> delle parole, risulta particolarmente lenta.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_FOLDER</span><span class="p">,</span> <span class="s2">&quot;csv/train.csv&quot;</span><span class="p">)</span>
+<span class="n">reviews</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">train_fp</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;review_id&quot;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;stars&#39;</span><span class="p">,</span> <span class="s1">&#39;review_id&#39;</span><span class="p">])</span>
+<span class="n">reviews</span> <span class="o">=</span> <span class="n">reviews</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><p>Procediamo con la rimozione delle <i>stopwords</i> dalle recensioni.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">reviews</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reviews</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">remove_stopwords</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><p>Calcoliamo la <i>part-of-speach</i> a cui sono associate le varie parole contenute nelle recensioni. Per farlo abbiamo sfruttato la libreria <code>textblob</code> che espone la classe <code>TextBlob(word)</code>. Quest'ultima permette di costuire un'istanza della classe sulla base di un testo. Questa classe espone svariati metodi e attributi, di particolare interesse per i nostri scopi l'attributo <code>.tags</code>. Quest'ultimo contiene una lista di tuple, una per ogni parola della recensione, i cui elementi sono rispettivamente una parola della recensione e la relativa <i>part-of-speach</i>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">reviews</span><span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reviews</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">tb</span><span class="o">.</span><span class="n">TextBlob</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><p>Sfortunatamente la sintassi utilizzata da <code>TextBlob</code> per identificare le tags che compaiono nel testo è leggermente differente dalle tags utilizzate da <code>SentiWordNet</code>, è dunque necessaria una traduzione.<br>
+Per questa operazione abbiamo sviluppato manualmente un dizionario che mappi le tags di <code>TextBlob</code> nelle tags di <code>SentiWordNet</code>.</p>
+
 </div>
 </div>
 </div>
@@ -13484,28 +13534,7 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 <div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;../data/csv/train.csv&quot;</span><span class="p">)</span>
-<span class="n">train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-    <span class="n">train_fp</span><span class="p">,</span>
-    <span class="n">index_col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;review_id&#39;</span><span class="p">]</span>
-<span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;../data/csv/train.csv&quot;</span><span class="p">)</span>
-<span class="n">test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-    <span class="n">test_fp</span><span class="p">,</span>
-    <span class="n">index_col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;review_id&#39;</span><span class="p">]</span>
-<span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">reviews</span><span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reviews</span><span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">convert_tags</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13516,28 +13545,8 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3>Separazione feature-labels</h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">],</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;stars&#39;</span><span class="p">]</span>
-<span class="n">X_test</span><span class="p">,</span> <span class="n">Y_test</span> <span class="o">=</span> <span class="n">test</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">],</span> <span class="n">test</span><span class="p">[</span><span class="s1">&#39;stars&#39;</span><span class="p">]</span>
-</pre></div>
+<p><p>Dal momento che, oltre alla polarità delle parole, siamo anche interessati alla loro frequenza è necessario che esssa venga calcolata. Per farlo abbiamo costruito, tramite la classe <code>CountVectorizer</code> una <i>term-matrix</i> che per ogni recensione ed ogni parola nel corpus ne indica la relativa frequenza. Successivamente sommando i valori lungo le colonne abbiamo ottenuto una lista in cui, ad ogni parola, è associata la frequenza assoluta nel corpus di recensioni.</p>
 
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3>Definizione della Pipeline</h3>
 </div>
 </div>
 </div>
@@ -13546,45 +13555,49 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 <div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">simple_pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([</span>
-    <span class="p">(</span><span class="s1">&#39;cv&#39;</span><span class="p">,</span> <span class="n">CountVectorizer</span><span class="p">()),</span>
-    <span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;passthrough&#39;</span><span class="p">)</span> 
-<span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cv</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">analyzer</span><span class="o">=</span><span class="n">dummy_analyzer</span><span class="p">)</span>
+<span class="n">bow</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">reviews</span><span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">])</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3>Griglia iperparametri</h3>
-</div>
-</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">simple_param_grid</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span>
-        <span class="s1">&#39;model&#39;</span><span class="p">:[</span><span class="n">SGDRegressor</span><span class="p">()],</span>
-        <span class="s1">&#39;model__penalty&#39;</span><span class="p">:[</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span><span class="s1">&#39;l1&#39;</span><span class="p">],</span>
-        <span class="s1">&#39;model__alpha&#39;</span><span class="p">:[</span><span class="mf">0.00001</span><span class="p">,</span> <span class="mf">0.0001</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">],</span>
-        <span class="s1">&#39;model__learning_rate&#39;</span><span class="p">:[</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="s1">&#39;optimal&#39;</span><span class="p">],</span>
-        <span class="s1">&#39;model__max_iter&#39;</span><span class="p">:[</span><span class="mi">2500</span><span class="p">]</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-        <span class="s1">&#39;model&#39;</span><span class="p">:[</span><span class="n">LinearRegression</span><span class="p">()],</span>
-        <span class="s1">&#39;model__normalize&#39;</span><span class="p">:[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-        <span class="s1">&#39;model&#39;</span><span class="p">:[</span><span class="n">DecisionTreeRegressor</span><span class="p">()]</span>
-    <span class="p">}</span>
-<span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">word_freq</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;word&#39;</span><span class="p">,</span> <span class="s1">&#39;freq&#39;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">freqs</span> <span class="o">=</span> <span class="n">bow</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">cv</span><span class="o">.</span><span class="n">vocabulary_</span><span class="p">:</span>
+    <span class="n">tmp_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;word&#39;</span><span class="p">:[</span><span class="n">k</span><span class="p">],</span> <span class="s1">&#39;freq&#39;</span><span class="p">:[</span><span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">vocabulary_</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">]]})</span>
+    <span class="n">word_freq</span> <span class="o">=</span> <span class="n">word_freq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp_df</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13595,7 +13608,93 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3>Training</h3>
+<p><p>A questo punto possiamo utilizzare le funzioni <code>.pos_score()</code> e <code>.neg_score()</code> della libreria <code>SentiWordNet</code>. Queste funzioni ritornano, sulla base di una parola ed una tag, una misura della positività o negatività espressa dalla parola stessa. Per rendere il codice più leggibile tali funzioni sono state definite in un file a parte nella cartella <code>scripts</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">word_freq</span><span class="p">[</span><span class="s1">&#39;pos_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">word_freq</span><span class="p">[</span><span class="s1">&#39;word&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">get_pos_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+<span class="n">word_freq</span><span class="p">[</span><span class="s1">&#39;neg_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">word_freq</span><span class="p">[</span><span class="s1">&#39;word&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">get_pos_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><p>Per molte combinazioni di parole e tags <code>SentiWordNet</code> non è in grado di fornire un coefficiente di positività o negatività. Le combinazioni per cui non è stato possibile calcolare il sentiment hanno nelle relative celle il valore speciale <code>nan</code>. Provvediamo a eliminare tutte le righe che contengano uno o più valori <code>nan</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">word_freq</span> <span class="o">=</span> <span class="n">word_freq</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;any&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><p>Per altre parole i coefficienti risultano essere uguali a zero, selezioniamo dunque tutte le righe del DataFrame per cui almeno uno dei due campi sia diverso da zero.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">word_freq</span> <span class="o">=</span> <span class="n">word_freq</span><span class="p">[(</span><span class="n">word_freq</span><span class="p">[</span><span class="s1">&#39;pos_score&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">word_freq</span><span class="p">[</span><span class="s1">&#39;neg_score&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><p>Ordiniamo le parole in funzione della frequenza, del coefficiente di sentimento positivo e negativo.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">word_freq</span> <span class="o">=</span> <span class="n">word_freq</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">,</span> <span class="s1">&#39;pos_score&#39;</span><span class="p">,</span> <span class="s1">&#39;neg_score&#39;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><p>Per poter mettere a confronto i coefficienti di sentiment positivi e negativi è più comodo considerare il valore assoluto di quest'ultimi. Applichiamo dunque alla colonna <code>'neg_score'</code> una funzione che, per ogni valore, ne ritorni il valore assoluto.</p>
+
 </div>
 </div>
 </div>
@@ -13604,13 +13703,34 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 <div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">simple_gs</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span>
-    <span class="n">simple_pipeline</span><span class="p">,</span>
-    <span class="n">param_grid</span><span class="o">=</span><span class="n">simple_param_grid</span><span class="p">,</span>
-    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;neg_mean_absolute_error&#39;</span><span class="p">,</span> <span class="s1">&#39;neg_root_mean_squared_error&#39;</span><span class="p">],</span>
-    <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">refit</span><span class="o">=</span><span class="kc">False</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">word_freq</span><span class="p">[</span><span class="s1">&#39;neg_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">word_freq</span><span class="p">[</span><span class="s1">&#39;neg_score&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><p>Terminiamo con una rappresentazione grafica dei coefficienti di sentiment positivi e negativi per le parole più frequenti all'interno del corpus di recensioni.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">35</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plot_words_polarity</span><span class="p">(</span>
+    <span class="n">word_freq</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Sentiment Polarity delle </span><span class="si">{}</span><span class="s1"> parole più frequenti nel sample di recensioni&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">),</span>
+    <span class="n">x_axis_label</span><span class="o">=</span><span class="s1">&#39;Sentiment&#39;</span><span class="p">,</span>
+    <span class="n">y_axis_label</span><span class="o">=</span><span class="s1">&#39;Parole più frequenti&#39;</span>
 <span class="p">)</span>
 </pre></div>
 
@@ -13621,10 +13741,10 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">simple_gs</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">show</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13637,26 +13757,62 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[15]:</div>
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
 
 
 
 
-<div class="output_text output_subarea output_execute_result">
-<pre>GridSearchCV(cv=5,
-             estimator=Pipeline(steps=[(&#39;cv&#39;, CountVectorizer()),
-                                       (&#39;model&#39;, &#39;passthrough&#39;)]),
-             n_jobs=-1,
-             param_grid=[{&#39;model&#39;: [SGDRegressor()],
-                          &#39;model__alpha&#39;: [1e-05, 0.0001, 0.001],
-                          &#39;model__learning_rate&#39;: [&#39;constant&#39;, &#39;optimal&#39;],
-                          &#39;model__max_iter&#39;: [2500],
-                          &#39;model__penalty&#39;: [&#39;l2&#39;, &#39;l1&#39;]},
-                         {&#39;model&#39;: [LinearRegression()],
-                          &#39;model__normalize&#39;: [True, False]},
-                         {&#39;model&#39;: [DecisionTreeRegressor()]}],
-             refit=False,
-             scoring=[&#39;neg_mean_absolute_error&#39;, &#39;neg_root_mean_squared_error&#39;])</pre>
+
+
+  <div class="bk-root" id="04de9b0a-0146-46fe-a077-a13eaf119f35" data-root-id="1002"></div>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+<div id="469f9df5-90b0-4a16-b3d0-becb00c48e86"></div>
+<div class="output_subarea output_javascript ">
+<script type="text/javascript">
+var element = $('#469f9df5-90b0-4a16-b3d0-becb00c48e86');
+(function(root) {
+  function embed_document(root) {
+    
+  var docs_json = {"f4b17ece-5e26-404b-bad1-0af347b92ae1":{"roots":{"references":[{"attributes":{"below":[{"id":"1013"}],"center":[{"id":"1016"},{"id":"1019"}],"left":[{"id":"1017"}],"plot_width":800,"renderers":[{"id":"1037"},{"id":"1042"}],"title":{"id":"1003"},"toolbar":{"id":"1027"},"x_range":{"id":"1005"},"x_scale":{"id":"1009"},"y_range":{"id":"1007"},"y_scale":{"id":"1011"}},"id":"1002","subtype":"Figure","type":"Plot"},{"attributes":{},"id":"1047","type":"BasicTickFormatter"},{"attributes":{},"id":"1050","type":"Selection"},{"attributes":{"data_source":{"id":"1034"},"glyph":{"id":"1035"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1036"},"selection_glyph":null,"view":{"id":"1038"}},"id":"1037","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#145b9c"},"height":{"value":0.25},"line_alpha":{"value":0.1},"line_color":{"value":"#145b9c"},"right":{"field":"right"},"y":{"field":"y"}},"id":"1036","type":"HBar"},{"attributes":{},"id":"1051","type":"UnionRenderers"},{"attributes":{"axis_label":"Parole pi\u00f9 frequenti","formatter":{"id":"1045"},"ticker":{"id":"1018"}},"id":"1017","type":"CategoricalAxis"},{"attributes":{"active_drag":"auto","active_inspect":"auto","active_multi":null,"active_scroll":"auto","active_tap":"auto","tools":[{"id":"1020"},{"id":"1021"},{"id":"1022"},{"id":"1023"},{"id":"1024"},{"id":"1025"}]},"id":"1027","type":"Toolbar"},{"attributes":{},"id":"1020","type":"PanTool"},{"attributes":{},"id":"1053","type":"UnionRenderers"},{"attributes":{"fill_alpha":{"value":0.7},"fill_color":{"value":"#145b9c"},"height":{"value":0.25},"line_alpha":{"value":0.7},"line_color":{"value":"#145b9c"},"right":{"field":"right"},"y":{"field":"y"}},"id":"1035","type":"HBar"},{"attributes":{"fill_alpha":{"value":0.7},"fill_color":{"value":"#cc2c11"},"height":{"value":0.25},"line_alpha":{"value":0.7},"line_color":{"value":"#cc2c11"},"right":{"field":"right"},"y":{"field":"y"}},"id":"1040","type":"HBar"},{"attributes":{},"id":"1021","type":"WheelZoomTool"},{"attributes":{"source":{"id":"1039"}},"id":"1043","type":"CDSView"},{"attributes":{},"id":"1052","type":"Selection"},{"attributes":{"overlay":{"id":"1026"}},"id":"1022","type":"BoxZoomTool"},{"attributes":{},"id":"1045","type":"CategoricalTickFormatter"},{"attributes":{"bottom_units":"screen","fill_alpha":0.5,"fill_color":"lightgrey","left_units":"screen","level":"overlay","line_alpha":1.0,"line_color":"black","line_dash":[4,4],"line_width":2,"right_units":"screen","top_units":"screen"},"id":"1026","type":"BoxAnnotation"},{"attributes":{},"id":"1023","type":"SaveTool"},{"attributes":{"data_source":{"id":"1039"},"glyph":{"id":"1040"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1041"},"selection_glyph":null,"view":{"id":"1043"}},"id":"1042","type":"GlyphRenderer"},{"attributes":{"start":-1},"id":"1005","type":"Range1d"},{"attributes":{"data":{"right":{"__ndarray__":"AAAAAAAA4D8AAAAAAADAPwAAAAAAANg/AAAAAAAAAAAAAAAAAADQPwAAAAAAAAAAAAAAAAAAAAAAAAAAAADYPwAAAAAAAAAAAAAAAAAAwD8AAAAAAAAAAAAAAAAAAOg/AAAAAAAAwD8AAAAAAADYPwAAAAAAANg/AAAAAAAA4D8AAAAAAADQPwAAAAAAAMA/AAAAAAAAAAAAAAAAAADgPwAAAAAAAMA/AAAAAAAA2D8AAAAAAADkPwAAAAAAAAAAAAAAAAAA0D8AAAAAAADAPwAAAAAAANg/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAOA/AAAAAAAAAAAAAAAAAADYPwAAAAAAANg/AAAAAAAA4D8AAAAAAADQPw==","dtype":"float64","order":"little","shape":[35]},"y":["good.n.1","weak.a.1","back.v.1","goth.n.1","best.n.1","madhouse.n.1","comeback.n.1","notable.a.1","little.r.1","much.r.1","wanting.a.1","better.v.1","leftover.a.1","famine.n.1","care.v.1","better.n.1","decidedly.r.1","yearly.r.1","beef.v.1","comparable.a.1","latest.a.1","ably.r.1","tasteful.a.1","right.v.1","thoughtful.a.1","high.n.1","long.v.1","comfort.n.1","letdown.n.1","check.v.1","wrong.n.1","alright.a.1","good.r.1","liked.a.1","willfully.r.1"]},"selected":{"id":"1050"},"selection_policy":{"id":"1051"}},"id":"1034","type":"ColumnDataSource"},{"attributes":{"axis":{"id":"1013"},"ticker":null},"id":"1016","type":"Grid"},{"attributes":{},"id":"1009","type":"LinearScale"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#cc2c11"},"height":{"value":0.25},"line_alpha":{"value":0.1},"line_color":{"value":"#cc2c11"},"right":{"field":"right"},"y":{"field":"y"}},"id":"1041","type":"HBar"},{"attributes":{},"id":"1011","type":"CategoricalScale"},{"attributes":{},"id":"1014","type":"BasicTicker"},{"attributes":{},"id":"1025","type":"HelpTool"},{"attributes":{"factors":["good.n.1","weak.a.1","back.v.1","goth.n.1","best.n.1","madhouse.n.1","comeback.n.1","notable.a.1","little.r.1","much.r.1","wanting.a.1","better.v.1","leftover.a.1","famine.n.1","care.v.1","better.n.1","decidedly.r.1","yearly.r.1","beef.v.1","comparable.a.1","latest.a.1","ably.r.1","tasteful.a.1","right.v.1","thoughtful.a.1","high.n.1","long.v.1","comfort.n.1","letdown.n.1","check.v.1","wrong.n.1","alright.a.1","good.r.1","liked.a.1","willfully.r.1"]},"id":"1007","type":"FactorRange"},{"attributes":{"axis":{"id":"1017"},"dimension":1,"ticker":null},"id":"1019","type":"Grid"},{"attributes":{"data":{"right":{"__ndarray__":"AAAAAAAAAIAAAAAAAADgvwAAAAAAAACAAAAAAAAA0L8AAAAAAAAAgAAAAAAAANC/AAAAAAAAwL8AAAAAAAAAgAAAAAAAANi/AAAAAAAAAIAAAAAAAADkvwAAAAAAAACAAAAAAAAA4L8AAAAAAADYvwAAAAAAAACAAAAAAAAAAIAAAAAAAAAAgAAAAAAAANi/AAAAAAAA4L8AAAAAAAAAgAAAAAAAAACAAAAAAAAAAIAAAAAAAAAAgAAAAAAAAMC/AAAAAAAAAIAAAAAAAAAAgAAAAAAAANi/AAAAAAAA4L8AAAAAAADovwAAAAAAAACAAAAAAAAA6L8AAAAAAADQvwAAAAAAAACAAAAAAAAAAIAAAAAAAAAAgA==","dtype":"float64","order":"little","shape":[35]},"y":["good.n.1","weak.a.1","back.v.1","goth.n.1","best.n.1","madhouse.n.1","comeback.n.1","notable.a.1","little.r.1","much.r.1","wanting.a.1","better.v.1","leftover.a.1","famine.n.1","care.v.1","better.n.1","decidedly.r.1","yearly.r.1","beef.v.1","comparable.a.1","latest.a.1","ably.r.1","tasteful.a.1","right.v.1","thoughtful.a.1","high.n.1","long.v.1","comfort.n.1","letdown.n.1","check.v.1","wrong.n.1","alright.a.1","good.r.1","liked.a.1","willfully.r.1"]},"selected":{"id":"1052"},"selection_policy":{"id":"1053"}},"id":"1039","type":"ColumnDataSource"},{"attributes":{},"id":"1018","type":"CategoricalTicker"},{"attributes":{"axis_label":"Sentiment","formatter":{"id":"1047"},"ticker":{"id":"1014"}},"id":"1013","type":"LinearAxis"},{"attributes":{},"id":"1024","type":"ResetTool"},{"attributes":{"text":"Sentiment Polarity delle 35 parole pi\u00f9 frequenti nel sample di recensioni"},"id":"1003","type":"Title"},{"attributes":{"source":{"id":"1034"}},"id":"1038","type":"CDSView"}],"root_ids":["1002"]},"title":"Bokeh Application","version":"2.2.0"}};
+  var render_items = [{"docid":"f4b17ece-5e26-404b-bad1-0af347b92ae1","root_ids":["1002"],"roots":{"1002":"04de9b0a-0146-46fe-a077-a13eaf119f35"}}];
+  root.Bokeh.embed.embed_items_notebook(docs_json, render_items);
+
+  }
+  if (root.Bokeh !== undefined) {
+    embed_document(root);
+  } else {
+    var attempts = 0;
+    var timer = setInterval(function(root) {
+      if (root.Bokeh !== undefined) {
+        clearInterval(timer);
+        embed_document(root);
+      } else {
+        attempts++;
+        if (attempts > 100) {
+          clearInterval(timer);
+          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+        }
+      }
+    }, 10, root)
+  }
+})(window);
+</script>
 </div>
 
 </div>
@@ -13664,40 +13820,13 @@ var element = $('#46d35c30-a0bb-4d57-b919-970ac378a45e');
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3>Dump risultati GridSearchCV</h3>
-</div>
-</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[40]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">results_df</span> <span class="o">=</span> <span class="n">clean_results_df</span><span class="p">(</span>
-    <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">simple_gs</span><span class="o">.</span><span class="n">cv_results_</span><span class="p">),</span>
-    <span class="n">to_remove</span><span class="o">=</span><span class="p">{},</span>
-    <span class="n">to_format</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mean_test_neg_mean_absolute_error&#39;</span><span class="p">,</span> <span class="s1">&#39;mean_test_neg_root_mean_squared_error&#39;</span><span class="p">],</span>
-    <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;.8f&quot;</span><span class="p">,</span>
-    <span class="n">new_index_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;rank_test_neg_root_mean_squared_error&#39;</span><span class="p">,</span> <span class="s1">&#39;rank_test_neg_mean_absolute_error&#39;</span><span class="p">]</span>
-<span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[42]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">results_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CV_RESULTS_FOLDER</span><span class="p">,</span> <span class="s2">&quot;simple_gs_results.csv&quot;</span><span class="p">)</span>
-<span class="n">dump_results</span><span class="p">(</span><span class="n">results_df</span><span class="p">,</span> <span class="n">results_fp</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span> 
 </pre></div>
 
     </div>
